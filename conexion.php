@@ -1,24 +1,14 @@
 <?php
-$host = "localhost";
-$user = "root";       
-$pass = "root";       // Cambiamos de "" a "root"
-$db   = "soporte_tecnico"; 
+// Configuración automática para Railway
+$host = getenv('MYSQLHOST');
+$user = getenv('MYSQLUSER');
+$pass = getenv('MYSQLPASSWORD');
+$db   = getenv('MYSQLDATABASE');
+$port = getenv('MYSQLPORT');
 
-// Intentar la conexión
-$conexion = mysqli_connect($host, $user, $pass, $db);
-
-// Si falla con 'root', intentamos sin contraseña por si acaso
-if (!$conexion) {
-    $conexion = mysqli_connect($host, $user, "", $db);
-}
-
-// Reporte de errores
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+$conexion = mysqli_connect($host, $user, $pass, $db, $port);
 
 if (!$conexion) {
-    die("❌ Error definitivo de conexión: " . mysqli_connect_error());
+    die("Error de conexión: " . mysqli_connect_error());
 }
-
-mysqli_set_charset($conexion, "utf8");
 ?>
