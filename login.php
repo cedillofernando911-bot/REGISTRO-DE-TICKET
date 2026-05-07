@@ -1,33 +1,38 @@
 <?php
+// 1. INICIAMOS SESIÓN Y CONEXIÓN
 session_start();
 include('conexion.php');
 
-// Si ya tiene sesión iniciada, mandarlo directo al index
+// Si el usuario ya está logueado, lo mandamos al index automáticamente
 if (isset($_SESSION['usuario'])) {
     header("Location: index.php");
     exit();
 }
 
-$error = "";
+$error_login = "";
 
-// Lógica para validar el acceso
+// 2. LÓGICA DE VALIDACIÓN (Se activa al dar clic al botón)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Limpiamos los datos para evitar hackeos (Inyección SQL)
     $user = mysqli_real_escape_string($conexion, $_POST['usuario']);
     $pass = mysqli_real_escape_string($conexion, $_POST['password']);
 
-    // Consulta para buscar al usuario
-    $query = "SELECT * FROM usuarios WHERE usuario = '$user' AND password = '$pass'";
-    $resultado = mysqli_query($conexion, $query);
+    // Buscamos al usuario en la base de datos
+    $sql = "SELECT * FROM usuarios WHERE usuario = '$user' AND password = '$pass'";
+    $resultado = mysqli_query($conexion, $sql);
 
     if (mysqli_num_rows($resultado) > 0) {
         $datos = mysqli_fetch_assoc($resultado);
-        $_SESSION['usuario'] = $datos['usuario'];
-        $_SESSION['rol'] = $datos['rol']; // admin, tecnico o cliente
         
+        // Guardamos los datos en la sesión
+        $_SESSION['usuario'] = $datos['usuario'];
+        $_SESSION['rol'] = $datos['rol']; 
+        
+        // ¡Vámonos al index!
         header("Location: index.php");
         exit();
     } else {
-        $error = "Usuario o contraseña incorrectos";
+        $error_login = "Usuario o contraseña incorrectos. Intenta de nuevo.";
     }
 }
 ?>
@@ -73,9 +78,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         h2 { color: #fff; margin-bottom: 20px; font-weight: 600; margin-top: 0; }
 
-        .error-msg {
-            color: #ff4d4d; background: rgba(255, 77, 77, 0.1);
-            padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 15px;
+        /* Estilo para el mensaje de error */
+        .error-box {
+            color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 77, 77, 0.2);
         }
 
         input {
@@ -102,17 +113,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="login-card">
         <div class="logo-header">
-            <img src="fondo_soporte.jpg" alt="Logo">
+            <img src="fondo_soporte.jpg" alt="Logo FIME">
         </div>
 
         <h2>Portal de Soporte</h2>
 
-        <?php if($error): ?>
-            <div class="error-msg"><?php echo $error; ?></div>
+        <?php if($error_login != ""): ?>
+            <div class="error-box"><?php echo $error_login; ?></div>
         <?php endif; ?>
         
         <form action="login.php" method="POST">
-            <input type="text" name="usuario" placeholder="Usuario" required>
+            <input type="text" name="usuario" placeholder="Nombre de usuario" required>
             <input type="password" name="password" placeholder="Contraseña" required>
             <button type="submit">Iniciar Sesión</button>
         </form>
