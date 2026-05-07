@@ -1,5 +1,5 @@
 <?php
-// Configuración profesional para Railway
+// Conexión automática para Railway
 $host = getenv('MYSQLHOST');
 $user = getenv('MYSQLUSER');
 $pass = getenv('MYSQLPASSWORD');
