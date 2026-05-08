@@ -1,6 +1,13 @@
 {
+    "name": "fime/sistema-tickets",
+    "description": "Sistema de Soporte Técnico FIME",
     "require": {
         "php": ">=8.0",
         "ext-mysqli": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
     }
 }
